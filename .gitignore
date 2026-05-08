@@ -8,3 +8,5 @@ dist/
 web-build/
 .env
 .env.*
+
+.expo-home/
