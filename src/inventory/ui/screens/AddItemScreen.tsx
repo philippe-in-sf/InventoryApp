@@ -7,7 +7,7 @@ import { ItemField } from "../components/ItemField";
 import { palette, radii, spacing } from "../theme";
 
 interface AddItemScreenProps {
-  onSave(draft: ItemDraft & { barcode?: string }): void | Promise<void>;
+  onSave(draft: ItemDraft & { barcode?: string }): unknown | Promise<unknown>;
   lookup: LookupService["lookup"];
 }
 
