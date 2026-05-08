@@ -8,5 +8,7 @@ dist/
 web-build/
 .env
 .env.*
-
 .expo-home/
+.DS_Store
+.vercel/
+.vercel-home/
