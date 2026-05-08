@@ -1,0 +1,12 @@
+.superpowers/
+.codex-git/
+.npm-cache/
+.git-test
+node_modules/
+.expo/
+dist/
+web-build/
+.env
+.env.*
+
+.expo-home/

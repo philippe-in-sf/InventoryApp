@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Inventory",
+    "slug": "inventory-app",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "inventory",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Scan barcodes to add inventory items."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": ["CAMERA"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": ["expo-router", "expo-sqlite", "expo-camera"]
+  }
+}
