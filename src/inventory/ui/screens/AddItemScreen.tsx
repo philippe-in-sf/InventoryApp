@@ -7,7 +7,7 @@ import { ItemField } from "../components/ItemField";
 import { palette, radii, spacing } from "../theme";
 
 interface AddItemScreenProps {
-  onSave(draft: ItemDraft & { barcode?: string }): void;
+  onSave(draft: ItemDraft & { barcode?: string }): void | Promise<void>;
   lookup: LookupService["lookup"];
 }
 
@@ -16,6 +16,7 @@ export function AddItemScreen({ onSave, lookup }: AddItemScreenProps) {
   const [barcode, setBarcode] = useState("");
   const [message, setMessage] = useState("");
   const [categoryId, setCategoryId] = useState("general");
+  const [saving, setSaving] = useState(false);
 
   async function handleLookup() {
     const result = await lookup(barcode);
@@ -26,6 +27,19 @@ export function AddItemScreen({ onSave, lookup }: AddItemScreenProps) {
     }
 
     setMessage("No match found. The code is saved for manual entry.");
+  }
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await onSave({ name, categoryId, barcode });
+      setName("");
+      setBarcode("");
+      setCategoryId("general");
+      setMessage("Saved to your local inventory.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -60,7 +74,7 @@ export function AddItemScreen({ onSave, lookup }: AddItemScreenProps) {
             Books can track title, author, topic, condition, and value. Electronics can track maker, device type, model, serial number, and value.
           </Text>
         </View>
-        <ActionButton title="Save item" onPress={() => onSave({ name, categoryId, barcode })} />
+        <ActionButton title={saving ? "Saving..." : "Save item"} onPress={handleSave} />
       </Card>
     </ScreenShell>
   );
@@ -74,8 +88,8 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     borderWidth: 1,
     gap: spacing.sm,
-    minHeight: 170,
     justifyContent: "center",
+    minHeight: 170,
     padding: spacing.xl,
   },
   scanCorner: {

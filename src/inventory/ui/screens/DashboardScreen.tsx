@@ -1,10 +1,18 @@
-import { StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
+import type { Inventory, InventoryItem } from "../../domain/types";
 import { ActionButton, Card, ListRow, MetricCard, ScreenShell, SectionHeader } from "../components/DesignSystem";
 import { palette, radii, spacing } from "../theme";
 
-export function DashboardScreen() {
+interface DashboardScreenProps {
+  inventories?: Inventory[];
+  items?: InventoryItem[];
+  totalValueCents?: number;
+}
+
+export function DashboardScreen({ inventories = [], items = [], totalValueCents = 0 }: DashboardScreenProps) {
   const router = useRouter();
+  const recentItems = items.slice(0, 3);
 
   return (
     <ScreenShell
@@ -17,9 +25,9 @@ export function DashboardScreen() {
           <View style={styles.heroIcon}>
             <Text style={styles.heroIconText}>I</Text>
           </View>
-          <Text style={styles.heroStatus}>Cloud sync optional</Text>
+          <Text style={styles.heroStatus}>{items.length ? `${items.length} saved locally` : "Cloud sync optional"}</Text>
         </View>
-        <Text style={styles.heroTitle}>Home inventory, ready for the first walkthrough.</Text>
+        <Text style={styles.heroTitle}>{items.length ? "Your local inventory is taking shape." : "Home inventory, ready for the first walkthrough."}</Text>
         <Text style={styles.heroCopy}>
           Start with a room, scan a code when one exists, then enrich the item with the fields that matter.
         </Text>
@@ -30,16 +38,30 @@ export function DashboardScreen() {
       </Card>
 
       <View style={styles.metricsGrid}>
-        <MetricCard detail="Estimated value tracked" label="Portfolio" tone="green" value="$0" />
-        <MetricCard detail="Rooms and collections" label="Inventories" tone="blue" value="0" />
-        <MetricCard detail="Local changes waiting" label="Sync queue" tone="gold" value="0" />
+        <MetricCard detail="Estimated value tracked" label="Portfolio" tone="green" value={formatCurrency(totalValueCents)} />
+        <MetricCard detail="Rooms and collections" label="Inventories" tone="blue" value={String(inventories.length)} />
+        <MetricCard detail="Items saved locally" label="Items" tone="gold" value={String(items.length)} />
       </View>
 
       <Card>
-        <SectionHeader action="View all" title="Starter paths" />
-        <ListRow detail="Kitchen, living room, garage, bedrooms, and storage." marker={<Text style={styles.markerText}>H</Text>} meta="Room by room" title="Whole home walkthrough" />
-        <ListRow detail="Books, electronics, tools, art, media, and collectibles." marker={<Text style={styles.markerText}>C</Text>} meta="Collections" title="Catalog a focused collection" />
-        <ListRow detail="Save UPC, ISBN, maker, model, serial number, and value." marker={<Text style={styles.markerText}>S</Text>} meta="Scan or type" title="Quick item capture" />
+        <SectionHeader action={items.length ? "Latest first" : "View all"} title={items.length ? "Recently added" : "Starter paths"} />
+        {recentItems.length ? (
+          recentItems.map((item) => (
+            <ListRow
+              key={item.id}
+              detail={`${item.categoryId} · Qty ${item.quantity}${item.barcodes[0] ? ` · ${item.barcodes[0].code}` : ""}`}
+              marker={<Text style={styles.markerText}>{item.categoryId.slice(0, 1).toUpperCase()}</Text>}
+              meta={formatCurrency(item.approximateValueCents)}
+              title={item.name || "Untitled item"}
+            />
+          ))
+        ) : (
+          <>
+            <ListRow detail="Kitchen, living room, garage, bedrooms, and storage." marker={<Text style={styles.markerText}>H</Text>} meta="Room by room" title="Whole home walkthrough" />
+            <ListRow detail="Books, electronics, tools, art, media, and collectibles." marker={<Text style={styles.markerText}>C</Text>} meta="Collections" title="Catalog a focused collection" />
+            <ListRow detail="Save UPC, ISBN, maker, model, serial number, and value." marker={<Text style={styles.markerText}>S</Text>} meta="Scan or type" title="Quick item capture" />
+          </>
+        )}
       </Card>
 
       <Card tone="soft">
@@ -50,6 +72,10 @@ export function DashboardScreen() {
       </Card>
     </ScreenShell>
   );
+}
+
+function formatCurrency(cents: number): string {
+  return new Intl.NumberFormat("en-US", { currency: "USD", maximumFractionDigits: 0, style: "currency" }).format(cents / 100);
 }
 
 const styles = StyleSheet.create({

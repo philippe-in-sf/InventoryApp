@@ -1,5 +1,7 @@
 import { InventoriesScreen } from "../../src/inventory/ui/screens/InventoriesScreen";
+import { useLocalInventory } from "../../src/inventory/ui/useLocalInventory";
 
 export default function InventoriesRoute() {
-  return <InventoriesScreen />;
+  const inventory = useLocalInventory();
+  return <InventoriesScreen inventories={inventory.inventories} items={inventory.items} />;
 }
