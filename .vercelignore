@@ -1,0 +1,11 @@
+node_modules
+.npm-cache
+.vercel-home
+.expo-home
+.expo
+.codex-git
+dist
+web-build
+.DS_Store
+.env
+.env.*
