@@ -5,6 +5,34 @@ import { AddItemScreen } from "./AddItemScreen";
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
+vi.mock("../ThemeProvider", () => ({
+  useTheme: () => ({
+    theme: {
+      palette: {
+        background: "#f6f3ee",
+        surface: "#fffdf9",
+        surfaceAlt: "#ece7df",
+        ink: "#1f2623",
+        muted: "#68736d",
+        faint: "#8f9791",
+        line: "#ded7cc",
+        primary: "#215c58",
+        primaryDark: "#173f3c",
+        accent: "#c8774a",
+        accentSoft: "#f3dfd1",
+        greenSoft: "#dce9df",
+        blueSoft: "#dce5ec",
+        goldSoft: "#f2e4bf",
+        danger: "#9f3d32",
+        heroText: "#fffdf9",
+        heroMuted: "#d8e2df",
+      },
+    },
+    themeId: "estate-ledger",
+    setThemeId: vi.fn(),
+  }),
+}));
+
 vi.mock("react-native", async () => {
   const React = await import("react");
 

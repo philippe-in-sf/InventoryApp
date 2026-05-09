@@ -1,8 +1,11 @@
-import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { palette } from "../../src/inventory/ui/theme";
+import { Tabs } from "expo-router";
+import { useTheme } from "../../src/inventory/ui/ThemeProvider";
 
 export default function TabLayout() {
+  const { theme } = useTheme();
+  const palette = theme.palette;
+
   return (
     <Tabs
       screenOptions={{
@@ -19,34 +22,10 @@ export default function TabLayout() {
         },
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => <Ionicons color={color} name="home-outline" size={size} />,
-        }}
-      />
-      <Tabs.Screen
-        name="inventories"
-        options={{
-          title: "Inventories",
-          tabBarIcon: ({ color, size }) => <Ionicons color={color} name="albums-outline" size={size} />,
-        }}
-      />
-      <Tabs.Screen
-        name="add"
-        options={{
-          title: "Add",
-          tabBarIcon: ({ color, size }) => <Ionicons color={color} name="scan-outline" size={size} />,
-        }}
-      />
-      <Tabs.Screen
-        name="household"
-        options={{
-          title: "Household",
-          tabBarIcon: ({ color, size }) => <Ionicons color={color} name="people-outline" size={size} />,
-        }}
-      />
+      <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color, size }) => <Ionicons color={color} name="home-outline" size={size} /> }} />
+      <Tabs.Screen name="inventories" options={{ title: "Inventories", tabBarIcon: ({ color, size }) => <Ionicons color={color} name="albums-outline" size={size} /> }} />
+      <Tabs.Screen name="add" options={{ title: "Add", tabBarIcon: ({ color, size }) => <Ionicons color={color} name="scan-outline" size={size} /> }} />
+      <Tabs.Screen name="household" options={{ title: "Household", tabBarIcon: ({ color, size }) => <Ionicons color={color} name="people-outline" size={size} /> }} />
     </Tabs>
   );
 }
