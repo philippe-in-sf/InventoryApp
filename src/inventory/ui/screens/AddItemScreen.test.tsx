@@ -11,9 +11,16 @@ vi.mock("react-native", async () => {
   return {
     View: ({ children, ...props }: { children?: React.ReactNode }) => React.createElement("View", props, children),
     Text: ({ children, ...props }: { children?: React.ReactNode }) => React.createElement("Text", props, children),
+    ScrollView: ({ children, ...props }: { children?: React.ReactNode }) =>
+      React.createElement("ScrollView", props, children),
     TextInput: (props: Record<string, unknown>) => React.createElement("TextInput", props),
+    Pressable: ({ children, onPress, ...props }: { children?: React.ReactNode; onPress(): void }) =>
+      React.createElement("Pressable", { ...props, onPress }, children),
     Button: ({ title, onPress }: { title: string; onPress(): void }) =>
       React.createElement("Button", { title, onPress }, title),
+    StyleSheet: {
+      create: (styles: Record<string, unknown>) => styles,
+    },
   };
 });
 
@@ -31,7 +38,7 @@ describe("AddItemScreen", () => {
       nameInput.props.onChangeText("Desk lamp");
     });
 
-    const saveButton = renderer!.root.findByProps({ title: "Save item" });
+    const saveButton = renderer!.root.findByProps({ accessibilityLabel: "Save item" });
     act(() => {
       saveButton.props.onPress();
     });
@@ -51,12 +58,12 @@ describe("AddItemScreen", () => {
       );
     });
 
-    const barcodeInput = renderer!.root.findByProps({ accessibilityLabel: "Barcode" });
+    const barcodeInput = renderer!.root.findByProps({ accessibilityLabel: "Barcode or ISBN" });
     act(() => {
       barcodeInput.props.onChangeText("012345678905");
     });
 
-    const lookupButton = renderer!.root.findByProps({ title: "Look up" });
+    const lookupButton = renderer!.root.findByProps({ accessibilityLabel: "Look up code" });
     await act(async () => {
       await lookupButton.props.onPress();
     });

@@ -1,11 +1,2 @@
-export interface FakeSqlite {
-  items: Map<string, Record<string, unknown>>;
-  queue: Record<string, unknown>[];
-}
-
-export function createFakeSqlite(): FakeSqlite {
-  return {
-    items: new Map(),
-    queue: [],
-  };
-}
+export type { MemoryInventoryDatabase as FakeSqlite } from "../inventory/local/memoryDatabase";
+export { createMemoryInventoryDatabase as createFakeSqlite } from "../inventory/local/memoryDatabase";

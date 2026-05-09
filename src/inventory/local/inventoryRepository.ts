@@ -1,3 +1,4 @@
+import type { MemoryInventoryDatabase } from "./memoryDatabase";
 import type { Inventory, InventoryKind } from "../domain/types";
 
 interface CreateInventoryInput {
@@ -7,8 +8,8 @@ interface CreateInventoryInput {
   householdId?: string;
 }
 
-export function createInventoryRepository() {
-  const inventories = new Map<string, Inventory>();
+export function createInventoryRepository(db?: MemoryInventoryDatabase) {
+  const inventories = db?.inventories ?? new Map<string, Inventory>();
 
   return {
     async createInventory(input: CreateInventoryInput): Promise<Inventory> {
@@ -25,6 +26,9 @@ export function createInventoryRepository() {
 
       inventories.set(inventory.id, inventory);
       return inventory;
+    },
+    async getInventory(id: string): Promise<Inventory | undefined> {
+      return inventories.get(id);
     },
     async listInventories(): Promise<Inventory[]> {
       return Array.from(inventories.values()).sort((a, b) => a.name.localeCompare(b.name));

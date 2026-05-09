@@ -10,7 +10,8 @@
     "web": "expo start --web",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "vercel-build": "EXPO_NO_TELEMETRY=1 EXPO_HOME=.expo-home expo export --platform web --output-dir dist"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
