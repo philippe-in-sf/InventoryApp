@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import type { Inventory, InventoryItem } from "../../domain/types";
 import { Card, ListRow, MetricCard, Pill, ScreenShell, SectionHeader } from "../components/DesignSystem";
-import { palette, spacing } from "../theme";
+import { useTheme } from "../ThemeProvider";
+import { spacing } from "../theme";
 
 interface InventoriesScreenProps {
   inventories?: Inventory[];
@@ -9,6 +10,9 @@ interface InventoriesScreenProps {
 }
 
 export function InventoriesScreen({ inventories = [], items = [] }: InventoriesScreenProps) {
+  const { theme } = useTheme();
+  const palette = theme.palette;
+  const styles = createStyles(palette);
   const collections = inventories.filter((inventory) => inventory.kind === "collection");
   const homeInventories = inventories.filter((inventory) => inventory.kind === "home");
 
@@ -66,7 +70,8 @@ function formatCurrency(cents: number): string {
   return new Intl.NumberFormat("en-US", { currency: "USD", maximumFractionDigits: 0, style: "currency" }).format(cents / 100);
 }
 
-const styles = StyleSheet.create({
+function createStyles(palette: typeof import("../theme").palette) {
+  return StyleSheet.create({
   filterBar: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -81,4 +86,5 @@ const styles = StyleSheet.create({
     color: palette.accent,
     fontWeight: "900",
   },
-});
+  });
+}

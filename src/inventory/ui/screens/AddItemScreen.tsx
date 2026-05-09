@@ -4,7 +4,8 @@ import type { ItemDraft } from "../../domain/types";
 import type { LookupService } from "../../lookup/lookupService";
 import { ActionButton, Card, Pill, ScreenShell, SectionHeader } from "../components/DesignSystem";
 import { ItemField } from "../components/ItemField";
-import { palette, radii, spacing } from "../theme";
+import { useTheme } from "../ThemeProvider";
+import { radii, spacing } from "../theme";
 
 interface AddItemScreenProps {
   onSave(draft: ItemDraft & { barcode?: string }): unknown | Promise<unknown>;
@@ -12,6 +13,9 @@ interface AddItemScreenProps {
 }
 
 export function AddItemScreen({ onSave, lookup }: AddItemScreenProps) {
+  const { theme } = useTheme();
+  const palette = theme.palette;
+  const styles = createStyles(palette);
   const [name, setName] = useState("");
   const [barcode, setBarcode] = useState("");
   const [message, setMessage] = useState("");
@@ -80,7 +84,8 @@ export function AddItemScreen({ onSave, lookup }: AddItemScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(palette: typeof import("../theme").palette) {
+  return StyleSheet.create({
   scanFrame: {
     alignItems: "center",
     borderColor: "#6f9690",
@@ -99,12 +104,12 @@ const styles = StyleSheet.create({
     width: 80,
   },
   scanText: {
-    color: palette.surface,
+    color: palette.heroText,
     fontSize: 20,
     fontWeight: "800",
   },
   scanCopy: {
-    color: "#d8e2df",
+    color: palette.heroMuted,
     fontSize: 14,
     lineHeight: 20,
     textAlign: "center",
@@ -135,4 +140,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 21,
   },
-});
+  });
+}

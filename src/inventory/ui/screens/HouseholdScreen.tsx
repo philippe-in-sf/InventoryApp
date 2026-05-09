@@ -1,10 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
 import { createInventorySupabaseClient } from "../../sync/supabaseClient";
-import { Card, ListRow, ScreenShell, SectionHeader } from "../components/DesignSystem";
-import { palette, radii, spacing } from "../theme";
+import { Card, ListRow, Pill, ScreenShell, SectionHeader } from "../components/DesignSystem";
+import { useTheme } from "../ThemeProvider";
+import { radii, spacing, themeDefinitions } from "../theme";
 
 export function HouseholdScreen() {
   const supabaseEnabled = Boolean(createInventorySupabaseClient());
+  const { theme, themeId, setThemeId } = useTheme();
+  const palette = theme.palette;
+  const styles = createStyles(palette);
 
   return (
     <ScreenShell
@@ -27,6 +31,26 @@ export function HouseholdScreen() {
       </Card>
 
       <Card>
+        <SectionHeader title="Theme" action={theme.name} />
+        <View style={styles.themeGrid}>
+          {themeDefinitions.map((option) => (
+            <View key={option.id} style={[styles.themeOption, option.id === themeId && styles.themeOptionSelected]}>
+              <View style={styles.swatchRow}>
+                <View style={[styles.swatch, { backgroundColor: option.palette.primary }]} />
+                <View style={[styles.swatch, { backgroundColor: option.palette.accent }]} />
+                <View style={[styles.swatch, { backgroundColor: option.palette.primaryDark }]} />
+              </View>
+              <Text style={styles.themeName}>{option.name}</Text>
+              <Text style={styles.themeDescription}>{option.description}</Text>
+              <Pill selected={option.id === themeId} onPress={() => setThemeId(option.id)}>
+                {option.id === themeId ? "Selected" : "Use theme"}
+              </Pill>
+            </View>
+          ))}
+        </View>
+      </Card>
+
+      <Card>
         <SectionHeader title="Collaboration model" />
         <ListRow detail="Private inventories stay readable and editable offline." marker={<Text style={styles.marker}>1</Text>} title="Local first" />
         <ListRow detail="A household database can share selected rooms or collections later." marker={<Text style={styles.marker}>2</Text>} title="Share selectively" />
@@ -43,39 +67,79 @@ export function HouseholdScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  statusRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing.md,
-  },
-  statusDot: {
-    backgroundColor: palette.accent,
-    borderRadius: radii.sm,
-    height: 14,
-    width: 14,
-  },
-  statusDotOn: {
-    backgroundColor: palette.primary,
-  },
-  statusText: {
-    color: palette.ink,
-    fontSize: 18,
-    fontWeight: "800",
-  },
-  statusTextDark: {
-    color: palette.surface,
-  },
-  copy: {
-    color: palette.muted,
-    fontSize: 15,
-    lineHeight: 23,
-  },
-  copyDark: {
-    color: "#d8e2df",
-  },
-  marker: {
-    color: palette.accent,
-    fontWeight: "900",
-  },
-});
+function createStyles(palette: typeof import("../theme").palette) {
+  return StyleSheet.create({
+    statusRow: {
+      alignItems: "center",
+      flexDirection: "row",
+      gap: spacing.md,
+    },
+    statusDot: {
+      backgroundColor: palette.accent,
+      borderRadius: radii.sm,
+      height: 14,
+      width: 14,
+    },
+    statusDotOn: {
+      backgroundColor: palette.primary,
+    },
+    statusText: {
+      color: palette.ink,
+      fontSize: 18,
+      fontWeight: "800",
+    },
+    statusTextDark: {
+      color: palette.heroText,
+    },
+    copy: {
+      color: palette.muted,
+      fontSize: 15,
+      lineHeight: 23,
+    },
+    copyDark: {
+      color: palette.heroMuted,
+    },
+    marker: {
+      color: palette.accent,
+      fontWeight: "900",
+    },
+    themeGrid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: spacing.md,
+    },
+    themeOption: {
+      backgroundColor: palette.surfaceAlt,
+      borderColor: palette.line,
+      borderRadius: radii.md,
+      borderWidth: 1,
+      flex: 1,
+      gap: spacing.sm,
+      minWidth: 190,
+      padding: spacing.lg,
+    },
+    themeOptionSelected: {
+      borderColor: palette.primary,
+      borderWidth: 2,
+    },
+    swatchRow: {
+      flexDirection: "row",
+      gap: spacing.sm,
+    },
+    swatch: {
+      borderRadius: 999,
+      height: 24,
+      width: 24,
+    },
+    themeName: {
+      color: palette.ink,
+      fontSize: 16,
+      fontWeight: "800",
+    },
+    themeDescription: {
+      color: palette.muted,
+      fontSize: 13,
+      lineHeight: 18,
+    },
+  });
+}

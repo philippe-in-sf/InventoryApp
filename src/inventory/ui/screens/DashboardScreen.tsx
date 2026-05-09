@@ -2,7 +2,8 @@ import { useRouter } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import type { Inventory, InventoryItem } from "../../domain/types";
 import { ActionButton, Card, ListRow, MetricCard, ScreenShell, SectionHeader } from "../components/DesignSystem";
-import { palette, radii, spacing } from "../theme";
+import { useTheme } from "../ThemeProvider";
+import { radii, spacing } from "../theme";
 
 interface DashboardScreenProps {
   inventories?: Inventory[];
@@ -12,6 +13,9 @@ interface DashboardScreenProps {
 
 export function DashboardScreen({ inventories = [], items = [], totalValueCents = 0 }: DashboardScreenProps) {
   const router = useRouter();
+  const { theme } = useTheme();
+  const palette = theme.palette;
+  const styles = createStyles(palette);
   const recentItems = items.slice(0, 3);
 
   return (
@@ -78,7 +82,8 @@ function formatCurrency(cents: number): string {
   return new Intl.NumberFormat("en-US", { currency: "USD", maximumFractionDigits: 0, style: "currency" }).format(cents / 100);
 }
 
-const styles = StyleSheet.create({
+function createStyles(palette: typeof import("../theme").palette) {
+  return StyleSheet.create({
   heroTop: {
     alignItems: "center",
     flexDirection: "row",
@@ -93,7 +98,7 @@ const styles = StyleSheet.create({
     width: 44,
   },
   heroIconText: {
-    color: palette.surface,
+    color: palette.heroText,
     fontSize: 22,
     fontWeight: "900",
   },
@@ -103,13 +108,13 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
   heroTitle: {
-    color: palette.surface,
+    color: palette.heroText,
     fontSize: 28,
     fontWeight: "800",
     lineHeight: 34,
   },
   heroCopy: {
-    color: "#d8e2df",
+    color: palette.heroMuted,
     fontSize: 15,
     lineHeight: 23,
   },
@@ -132,4 +137,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 23,
   },
-});
+  });
+}
