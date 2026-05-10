@@ -21,6 +21,7 @@ describe("lookup service", () => {
     const result = await service.lookup("9780441478125");
 
     expect(result.status).toBe("found");
+    if (result.status !== "found") throw new Error("Expected a lookup match");
     expect(result.fields.name).toBe("The Left Hand of Darkness");
   });
 

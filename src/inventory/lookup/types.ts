@@ -5,6 +5,7 @@ export interface LookupFields {
   categoryId: string;
   description?: string;
   approximateValueCents?: number;
+  photos?: string[];
   customFields?: Record<string, string | number | boolean | null>;
 }
 

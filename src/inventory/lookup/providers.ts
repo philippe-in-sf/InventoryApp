@@ -23,7 +23,8 @@ export const openLibraryProvider: LookupProvider = {
       scannedCode: code,
       fields: {
         name: data.title,
-        categoryId: "book",
+        categoryId: "books",
+        photos: [openLibraryCoverUrl(code)],
         customFields: {
           title: data.title,
           isbn: code,
@@ -42,7 +43,10 @@ export const openFoodFactsProvider: LookupProvider = {
       return { status: "error", message: `Open Food Facts returned ${response.status}`, scannedCode: code };
     }
 
-    const data = (await response.json()) as { status?: number; product?: { product_name?: string; brands?: string } };
+    const data = (await response.json()) as {
+      status?: number;
+      product?: { product_name?: string; brands?: string; image_front_url?: string; image_url?: string };
+    };
     if (data.status !== 1 || !data.product?.product_name) {
       return { status: "not_found", scannedCode: code };
     }
@@ -55,6 +59,7 @@ export const openFoodFactsProvider: LookupProvider = {
       fields: {
         name: data.product.product_name,
         categoryId: "general",
+        photos: compactPhotos([data.product.image_front_url, data.product.image_url]),
         customFields: {
           maker: data.product.brands ?? null,
         },
@@ -62,3 +67,12 @@ export const openFoodFactsProvider: LookupProvider = {
     };
   },
 };
+
+function openLibraryCoverUrl(code: string): string {
+  return `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(code)}-L.jpg?default=false`;
+}
+
+function compactPhotos(photos: Array<string | undefined>): string[] | undefined {
+  const compacted = photos.filter((photo): photo is string => Boolean(photo));
+  return compacted.length ? compacted : undefined;
+}

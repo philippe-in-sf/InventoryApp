@@ -1,9 +1,9 @@
-import type { ReactTestRenderer } from "react-test-renderer";
+import type { ReactTestRenderer, ReactTestInstance } from "react-test-renderer";
 import { act, create } from "react-test-renderer";
 import { describe, expect, it, vi } from "vitest";
 import { AddItemScreen } from "./AddItemScreen";
 
-globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+(globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 vi.mock("../ThemeProvider", () => ({
   useTheme: () => ({
@@ -39,6 +39,7 @@ vi.mock("react-native", async () => {
   return {
     View: ({ children, ...props }: { children?: React.ReactNode }) => React.createElement("View", props, children),
     Text: ({ children, ...props }: { children?: React.ReactNode }) => React.createElement("Text", props, children),
+    Image: (props: Record<string, unknown>) => React.createElement("Image", props),
     ScrollView: ({ children, ...props }: { children?: React.ReactNode }) =>
       React.createElement("ScrollView", props, children),
     TextInput: (props: Record<string, unknown>) => React.createElement("TextInput", props),
@@ -53,7 +54,7 @@ vi.mock("react-native", async () => {
 });
 
 describe("AddItemScreen", () => {
-  it("saves a manual item", () => {
+  it("saves a manual item", async () => {
     const onSave = vi.fn();
     let renderer: ReactTestRenderer;
 
@@ -67,8 +68,8 @@ describe("AddItemScreen", () => {
     });
 
     const saveButton = renderer!.root.findByProps({ accessibilityLabel: "Save item" });
-    act(() => {
-      saveButton.props.onPress();
+    await act(async () => {
+      await saveButton.props.onPress();
     });
 
     expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ name: "Desk lamp" }));
@@ -96,10 +97,56 @@ describe("AddItemScreen", () => {
       await lookupButton.props.onPress();
     });
 
-    const message = renderer!.root.findAllByType("Text").find((node) => {
+    const message = renderer!.root.findAllByType("Text").find((node: ReactTestInstance) => {
       return node.children.includes("No match found. The code is saved for manual entry.");
     });
 
     expect(message).toBeTruthy();
+  });
+
+  it("saves stock photos returned from lookup", async () => {
+    const onSave = vi.fn();
+    let renderer: ReactTestRenderer;
+
+    act(() => {
+      renderer = create(
+        <AddItemScreen
+          onSave={onSave}
+          lookup={async () => ({
+            status: "found",
+            confidence: "high",
+            source: "Open Library",
+            fields: {
+              name: "Dune",
+              categoryId: "books",
+              photos: ["https://covers.openlibrary.org/b/isbn/9780441172719-L.jpg?default=false"],
+            },
+          })}
+        />,
+      );
+    });
+
+    const barcodeInput = renderer!.root.findByProps({ accessibilityLabel: "Barcode or ISBN" });
+    act(() => {
+      barcodeInput.props.onChangeText("9780441172719");
+    });
+
+    const lookupButton = renderer!.root.findByProps({ accessibilityLabel: "Look up code" });
+    await act(async () => {
+      await lookupButton.props.onPress();
+    });
+
+    const saveButton = renderer!.root.findByProps({ accessibilityLabel: "Save item" });
+    await act(async () => {
+      await saveButton.props.onPress();
+    });
+
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({
+        categoryId: "books",
+        name: "Dune",
+        photos: ["https://covers.openlibrary.org/b/isbn/9780441172719-L.jpg?default=false"],
+      }),
+    );
   });
 });

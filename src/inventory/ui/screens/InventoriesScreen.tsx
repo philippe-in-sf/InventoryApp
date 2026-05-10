@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import type { Inventory, InventoryItem } from "../../domain/types";
 import { Card, ListRow, MetricCard, Pill, ScreenShell, SectionHeader } from "../components/DesignSystem";
 import { useTheme } from "../ThemeProvider";
@@ -52,7 +52,7 @@ export function InventoriesScreen({ inventories = [], items = [] }: InventoriesS
         <SectionHeader action="New collection" title="Saved items" />
         {items.length ? (
           items.map((item) => (
-            <ListRow key={item.id} detail={`${item.categoryId}${item.barcodes[0] ? ` · ${item.barcodes[0].kind} ${item.barcodes[0].code}` : ""}`} marker={<Text style={styles.marker}>{item.categoryId.slice(0, 1).toUpperCase()}</Text>} meta={formatCurrency(item.approximateValueCents)} title={item.name || "Untitled item"} />
+            <ListRow key={item.id} detail={`${item.categoryId}${item.barcodes[0] ? ` · ${item.barcodes[0].kind} ${item.barcodes[0].code}` : ""}`} marker={<ItemMarker item={item} styles={styles} />} meta={formatCurrency(item.approximateValueCents)} title={item.name || "Untitled item"} />
           ))
         ) : (
           <>
@@ -64,6 +64,12 @@ export function InventoriesScreen({ inventories = [], items = [] }: InventoriesS
       </Card>
     </ScreenShell>
   );
+}
+
+function ItemMarker({ item, styles }: { item: InventoryItem; styles: ReturnType<typeof createStyles> }) {
+  const photo = item.photos[0];
+  if (photo) return <Image source={{ uri: photo }} style={styles.itemThumb} />;
+  return <Text style={styles.marker}>{item.categoryId.slice(0, 1).toUpperCase()}</Text>;
 }
 
 function formatCurrency(cents: number): string {
@@ -85,6 +91,10 @@ function createStyles(palette: typeof import("../theme").palette) {
   marker: {
     color: palette.accent,
     fontWeight: "900",
+  },
+  itemThumb: {
+    height: "100%",
+    width: "100%",
   },
   });
 }

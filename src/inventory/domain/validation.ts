@@ -11,6 +11,7 @@ export function normalizeItemDraft(draft: ItemDraft): Required<ItemDraft> {
     categoryId: draft.categoryId,
     quantity: Math.max(1, Math.floor(draft.quantity ?? 1)),
     approximateValueCents: Math.max(0, Math.floor(draft.approximateValueCents ?? 0)),
+    photos: draft.photos ?? [],
     customFields: draft.customFields ?? {},
   };
 }

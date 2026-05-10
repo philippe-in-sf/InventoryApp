@@ -60,5 +60,6 @@ export interface ItemDraft {
   categoryId: string;
   quantity?: number;
   approximateValueCents?: number;
+  photos?: string[];
   customFields?: Record<string, string | number | boolean | null>;
 }

@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import type { Inventory, InventoryItem } from "../../domain/types";
 import { ActionButton, Card, ListRow, MetricCard, ScreenShell, SectionHeader } from "../components/DesignSystem";
 import { useTheme } from "../ThemeProvider";
@@ -54,7 +54,7 @@ export function DashboardScreen({ inventories = [], items = [], totalValueCents 
             <ListRow
               key={item.id}
               detail={`${item.categoryId} · Qty ${item.quantity}${item.barcodes[0] ? ` · ${item.barcodes[0].code}` : ""}`}
-              marker={<Text style={styles.markerText}>{item.categoryId.slice(0, 1).toUpperCase()}</Text>}
+              marker={<ItemMarker item={item} styles={styles} />}
               meta={formatCurrency(item.approximateValueCents)}
               title={item.name || "Untitled item"}
             />
@@ -76,6 +76,12 @@ export function DashboardScreen({ inventories = [], items = [], totalValueCents 
       </Card>
     </ScreenShell>
   );
+}
+
+function ItemMarker({ item, styles }: { item: InventoryItem; styles: ReturnType<typeof createStyles> }) {
+  const photo = item.photos[0];
+  if (photo) return <Image source={{ uri: photo }} style={styles.itemThumb} />;
+  return <Text style={styles.markerText}>{item.categoryId.slice(0, 1).toUpperCase()}</Text>;
 }
 
 function formatCurrency(cents: number): string {
@@ -131,6 +137,10 @@ function createStyles(palette: typeof import("../theme").palette) {
   markerText: {
     color: palette.accent,
     fontWeight: "900",
+  },
+  itemThumb: {
+    height: "100%",
+    width: "100%",
   },
   bodyCopy: {
     color: palette.muted,

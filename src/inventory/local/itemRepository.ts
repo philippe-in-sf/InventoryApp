@@ -17,7 +17,7 @@ export function createItemRepository(db: MemoryInventoryDatabase): ItemRepositor
         name: input.name.trim(),
         categoryId: input.categoryId,
         quantity: Math.max(1, input.quantity ?? 1),
-        photos: [],
+        photos: input.photos ?? [],
         barcodes: input.barcodes ?? [],
         approximateValueCents: Math.max(0, input.approximateValueCents ?? 0),
         customFields: input.customFields ?? {},
@@ -43,7 +43,7 @@ export function createItemRepository(db: MemoryInventoryDatabase): ItemRepositor
     },
     async listItems() {
       return Array.from(db.items.values())
-        .map((item) => item as InventoryItem)
+        .map((item) => item as unknown as InventoryItem)
         .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     },
   };

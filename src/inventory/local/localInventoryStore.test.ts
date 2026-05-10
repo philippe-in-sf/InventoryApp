@@ -33,4 +33,17 @@ describe("local inventory store", () => {
       syncState: "dirty",
     });
   });
+
+  it("keeps photo references on saved local items", async () => {
+    const store = createLocalInventoryStore(createFakeSqlite());
+
+    await store.saveDraft({
+      name: "Kindle Paperwhite",
+      categoryId: "electronics",
+      photos: ["file:///local/kindle.jpg", "https://images.example.com/kindle-stock.jpg"],
+    });
+
+    const items = await store.listItems();
+    expect(items[0].photos).toEqual(["file:///local/kindle.jpg", "https://images.example.com/kindle-stock.jpg"]);
+  });
 });

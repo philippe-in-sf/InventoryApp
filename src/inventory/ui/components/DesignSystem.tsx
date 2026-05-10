@@ -302,6 +302,7 @@ export function createStyles(palette: typeof import("../theme").palette) {
       borderRadius: radii.md,
       height: 42,
       justifyContent: "center",
+      overflow: "hidden",
       width: 42,
     },
     rowBody: {
